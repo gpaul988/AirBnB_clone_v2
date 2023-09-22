@@ -1,36 +1,38 @@
 #!/usr/bin/python3
 # Graham S. Paul (state.py)
-"""Containing class State"""
-import models
+""" State Module for HBNB project """
 from models.base_model import BaseModel, Base
-from os import getenv
-import sqlalchemy
 from sqlalchemy import Column, String
 from sqlalchemy.orm import relationship
+from os import getenv
+from models.stringtemplates import HBNB_TYPE_STORAGE, DB
 
 
 class State(BaseModel, Base):
-    """Rendering of state"""
-    if getenv('HBNB_TYPE_STORAGE') == 'db':
-        __tablename__ = 'states'
-        name = Column(String(128),
-                      nullable=False)
-        cities = relationship("City", cascade="all, delete",
-                              backref="states")
+    """
+    State class
+    Relationship between Class state to city
+    """
+    __tablename__ = 'states'
+
+    if (getenv(HBNB_TYPE_STORAGE) == DB):
+        name = Column(String(128), nullable=False)
+        cities = relationship('City', backref='state',
+                              cascade='all, delete, delete-orphan')
     else:
-        name = ""
+        name = ''
 
-    def __init__(self, *args, **kwargs):
-        """Boots state"""
-        super().__init__(*args, **kwargs)
-
-    if getenv('HBNB_TYPE_STORAGE') != 'db':
         @property
         def cities(self):
-            """fs picks up features that returns City instances"""
-            values_city = models.storage.all("City").values()
-            list_city = []
-            for city in values_city:
-                if city.state_id == self.id:
-                    list_city.append(city)
-            return list_city
+            '''Return a list of city instances in filestorage'''
+            from models import storage
+
+            list_cities = []
+            data = storage.all()
+            for city in data:
+                try:
+                    if data[city].state_id == self.id:
+                        list_cities.append(data[city])
+                except Exception:
+                    pass
+            return list_cities
