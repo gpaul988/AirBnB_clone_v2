@@ -1,19 +1,20 @@
 #!/usr/bin/python3
 # Graham S. Paul (1-pack_web_static.py)
-'''Script to create .tgz file from the inputs of webstatic
-usage: fab -f 1-pack_web_static.py do_pack
-'''
 from fabric.api import local
 from time import strftime
+from datetime import date
 
 
 def do_pack():
-    '''Create required files'''
-    timenow = strftime('%Y%M%d%H%M%S')
+    """ Script to create archive the contents of web_static folder"""
+
+    filename = strftime("%Y%m%d%H%M%S")
     try:
-        local('mkdir -p versions')
-        filename = 'versions/web_static_{}.tgz'.format(timenow)
-        local('tar -czvf {} web_static/'.format(filename))
-        return filename
-    except Exception:
+        local("mkdir -p versions")
+        local("tar -czvf versions/web_static_{}.tgz web_static/"
+              .format(filename))
+
+        return "versions/web_static_{}.tgz".format(filename)
+
+    except Exception as e:
         return None
