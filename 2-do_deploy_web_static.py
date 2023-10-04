@@ -1,10 +1,10 @@
 #!/usr/bin/python3
-# Graham S. Paul (2-do_deploy_web_static.py)
+""" Graham S. Paul (2-do_deploy_web_static.py) - Send files to remote server using fabric """
 from fabric.contrib import files
 from fabric.api import env, put, run
 import os
 
-env.hosts = ['54.82.216.202', '18.234.106.116']
+env.hosts = ['web1.gpaul.info', 'web2.gpaul.info']
 
 
 def do_deploy(archive_path):
