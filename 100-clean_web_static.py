@@ -1,63 +1,30 @@
 #!/usr/bin/python3
 # Graham S. Paul (100-clean_web_static.py)
-'''
-Sends files to remote server using Fabric
+import os
+from fabric.api import *
 
-'''
-from fabric.api import env, put, run, local
-import os.path
-from time import strftime
-env.hosts = ['web1.gpaul.info', 'web2.gpaul.info']
-
-
-def do_pack():
-    '''Create necessary files'''
-    timenow = strftime('%Y%M%d%H%M%S')
-    try:
-        local('mkdir -p versions')
-        filename = 'versions/web_static_{}.tgz'.format(timenow)
-        local('tar -czvf {} web_static/'.format(filename))
-        return filename
-    except Exception:
-        return None
-
-
-def do_deploy(archive_path):
-    '''Push achive to web servers'''
-    if not os.path.isfile(archive_path):
-        return False
-    try:
-        filename = archive_path.split('/')[-1]
-        no_ext = filename.split('.')[0]
-        path_no_ext = '/data/web_static/releases/{}/'.format(no_ext)
-        symlink = '/data/web_static/current'
-        put(archive_path, '/tmp/')
-        run('mkdir -p {}'.format(path_no_ext))
-        run('tar -xzf /tmp/{} -C {}'.format(filename, path_no_ext))
-        run('rm /tmp/{}'.format(filename))
-        run('mv {}web_static/* {}'.format(path_no_ext, path_no_ext))
-        run('rm -rf {}web_static'.format(path_no_ext))
-        run('rm -rf {}'.format(symlink))
-        run('ln -s {} {}'.format(path_no_ext, symlink))
-        return True
-    except Exception:
-        return False
-
-
-def deploy():
-    '''Sends to the web server'''
-    archive_path = do_pack()
-    if archive_path is None:
-        return False
-    deployment = do_deploy(archive_path)
-    return deployment
+env.hosts = ['<54.82.216.202>', '18.234.106.116']
 
 
 def do_clean(number=0):
-    '''Erase webservers'''
-    __local = 'versions/*.tgz'
-    __run = '/data/web_static/releases/web_static*'
-    if number == 0:
-        number = 1
-    local("rm -f `ls -t {} | awk 'NR>{}'`".format(__local, number))
-    run("rm -rf `ls -td {} | awk 'NR>{}'`".format(__run, number))
+    """Delete out-of-date archives.
+
+    Args:
+        number (int): The number of archives to keep.
+
+    If number is 0 or 1, keeps only the most recent archive. If
+    number is 2, keeps the most and second-most recent archives,
+    etc.
+    """
+    number = 1 if int(number) == 0 else int(number)
+
+    archives = sorted(os.listdir("versions"))
+    [archives.pop() for i in range(number)]
+    with lcd("versions"):
+        [local("rm ./{}".format(a)) for a in archives]
+
+    with cd("/data/web_static/releases"):
+        archives = run("ls -tr").split()
+        archives = [a for a in archives if "web_static_" in a]
+        [archives.pop() for i in range(number)]
+        [run("rm -rf ./{}".format(a)) for a in archives]
