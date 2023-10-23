@@ -1,5 +1,6 @@
 #!/usr/bin/python3
-""" Graham S. Paul (6-number_odd_or_even.py) - Begins Flask application with routes
+""" Graham S. Paul (6-number_odd_or_even.py)
+Begins Flask application with routes
 """
 
 from flask import Flask, render_template

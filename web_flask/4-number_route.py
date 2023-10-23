@@ -1,5 +1,6 @@
 #!/usr/bin/python3
-""" Graham S. Paul (4-number_route.py) - Begins a Flask application with routes
+""" Graham S. Paul (4-number_route.py)
+Begins a Flask application with routes
 """
 
 from flask import Flask

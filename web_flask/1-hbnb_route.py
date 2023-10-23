@@ -1,5 +1,6 @@
 #!/usr/bin/python3
-""" Graham S. Paul (1-hbnb_route.py) - Begin flask web application
+""" Graham S. Paul (1-hbnb_route.py)
+Begin flask web application
 """
 
 from flask import Flask
