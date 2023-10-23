@@ -1,5 +1,6 @@
 #!/usr/bin/python3
-""" Graham S. Paul (2-c_route.py) - Begins Flask application with routes
+""" Graham S. Paul (2-c_route.py)
+Begins Flask application with routes
 """
 
 from flask import Flask
